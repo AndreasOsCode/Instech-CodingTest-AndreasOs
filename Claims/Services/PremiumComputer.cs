@@ -1,5 +1,6 @@
 ﻿using Claims.Models;
 using Claims.Services.Interfaces;
+using RuleConstants = Claims.Constants.Constants.Rules;
 
 namespace Claims.Services;
 
@@ -9,10 +10,10 @@ public class PremiumComputer : IPremiumComputer<CoverType>
     {
         var multiplier = coverType switch
         {
-            CoverType.Yacht => 1.1m,
-            CoverType.PassengerShip => 1.2m,
-            CoverType.Tanker => 1.5m,
-            _ => 1.3m
+            CoverType.Yacht => RuleConstants.YachtDailyPremiumMultiplier,
+            CoverType.PassengerShip => RuleConstants.PassengerShipDailyPremiumMultiplier,
+            CoverType.Tanker => RuleConstants.TankerDailyPremiumMultiplier,
+            _ => RuleConstants.DefaultDailyPremiumMultiplier
         };
 
         var insuranceLength = (endDate - startDate).TotalDays;
@@ -30,8 +31,8 @@ public class PremiumComputer : IPremiumComputer<CoverType>
                 {
                     multiplier *= coverType switch
                     {
-                        CoverType.Yacht => 0.95m,
-                        _ => 0.98m
+                        CoverType.Yacht => RuleConstants.Yacht30DayDiscount,
+                        _ => RuleConstants.Default30DayDiscount
                     };
                     break;
                 }
@@ -39,8 +40,8 @@ public class PremiumComputer : IPremiumComputer<CoverType>
                 {
                     multiplier *= coverType switch
                     {
-                        CoverType.Yacht => 0.97m,
-                        _ => 0.99m
+                        CoverType.Yacht => RuleConstants.Yacht180DayDiscount,
+                        _ => RuleConstants.Default180DayDiscount
                     };
                     break;
                 }
