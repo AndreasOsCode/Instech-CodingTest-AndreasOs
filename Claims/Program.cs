@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Claims.Auditing;
 using Claims.Contexts;
+using Claims.Contexts.Interfaces;
 using Claims.Models;
 using Claims.Services;
 using Claims.Services.Interfaces;
@@ -26,6 +27,17 @@ builder.Services.AddDbContext<ClaimsDbContext>(
         options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
     }
 );
+builder.Services.AddDbContext<CoversDbContext>(
+    options =>
+    {
+        var client = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));
+        var database = client.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
+        options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
+    }
+);
+builder.Services.AddScoped<IGenericDbContext<Claim>, ClaimsDbContext>();
+builder.Services.AddScoped<IGenericDbContext<Cover>, CoversDbContext>();
+
 
 builder.Services.AddScoped<IPremiumComputer<CoverType>, PremiumComputer>();
 

@@ -5,7 +5,7 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace Claims.Contexts;
 
-public class CoversDbContext : DbContext, IGenericDbContext<Cover>
+public class CoversDbContext(DbContextOptions options) : DbContext(options), IGenericDbContext<Cover>
 {
     private DbSet<Cover> Covers { get; init; }
     
@@ -14,8 +14,7 @@ public class CoversDbContext : DbContext, IGenericDbContext<Cover>
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Cover>().ToCollection("covers");
     }
-
-
+    
     public async Task<IEnumerable<Cover>> GetItemsAsync()
     {
         return await Covers.ToListAsync();
