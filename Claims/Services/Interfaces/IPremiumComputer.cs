@@ -1,6 +1,4 @@
-﻿using Claims.Models;
-
-namespace Claims.Services.Interfaces;
+﻿namespace Claims.Services.Interfaces;
 
 public interface IPremiumComputer<T>
 {

@@ -5,7 +5,7 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace Claims.Contexts;
 
-public class CoversDbContext(DbContextOptions options) : DbContext(options), IGenericDbContext<Cover>
+public class CoversDbContext(DbContextOptions<CoversDbContext> options) : DbContext(options), IGenericDbContext<Cover>
 {
     private DbSet<Cover> Covers { get; init; }
     

@@ -5,7 +5,7 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace Claims.Contexts;
 
-public class ClaimsDbContext(DbContextOptions options) : DbContext(options), IGenericDbContext<Claim>
+public class ClaimsDbContext(DbContextOptions<ClaimsDbContext> options) : DbContext(options), IGenericDbContext<Claim>
 {
     private DbSet<Claim> Claims { get; init; }
 

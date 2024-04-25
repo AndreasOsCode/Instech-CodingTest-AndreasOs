@@ -47,16 +47,31 @@ namespace Claims.Tests
                 .WithWebHostBuilder(_ =>
                     {});
             var client = application.CreateClient();
+            
+            var cover = new Cover
+            {
+                Id = Guid.NewGuid().ToString(),
+                StartDate = DateTime.Now.AddDays(1),
+                EndDate = DateTime.Now.AddDays(120),
+                Type = CoverType.Yacht,
+                Premium = 0
+            };
+            var coverResponse = await client.PostAsync("/Covers", JsonContent.Create(cover));
+            coverResponse.EnsureSuccessStatusCode();
+            var coverContent = await coverResponse.Content.ReadAsStringAsync();
+            var insertedCover = JsonConvert.DeserializeObject<Cover>(coverContent);
+            Assert.True(insertedCover != null);
+            
             var claim = new Claim
             {
                 Id = Guid.NewGuid().ToString(),
-                CoverId = Guid.NewGuid().ToString(),
-                Created = DateTime.Now,
+                CoverId = insertedCover.Id,
+                Created = DateTime.Now.AddDays(1),
                 Name = "TestCollision",
                 Type = ClaimType.Collision,
-                DamageCost = 500
+                DamageCost = 2500
             };
-
+            
             var insertResponse = await client.PostAsync("/Claims", JsonContent.Create(claim));
             insertResponse.EnsureSuccessStatusCode();
             var insertContent = await insertResponse.Content.ReadAsStringAsync();

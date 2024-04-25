@@ -19,26 +19,26 @@ builder.Services
     });
 
 builder.Services.AddDbContext<AuditContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var mongoClient = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));
 builder.Services.AddDbContext<ClaimsDbContext>(
     options =>
     {
-        var client = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));
-        var database = client.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
+        var database = mongoClient.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
         options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
     }
 );
 builder.Services.AddDbContext<CoversDbContext>(
     options =>
     {
-        var client = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));
-        var database = client.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
+        var database = mongoClient.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]);
         options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
     }
 );
 builder.Services.AddScoped<IGenericDbContext<Claim>, ClaimsDbContext>();
 builder.Services.AddScoped<IGenericDbContext<Cover>, CoversDbContext>();
 
-
+builder.Services.AddScoped<IGenericDbService<Claim>, ClaimsDbService>();
+builder.Services.AddScoped<IGenericDbService<Cover>, CoversDbService>();
 builder.Services.AddScoped<IPremiumComputer<CoverType>, PremiumComputer>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
