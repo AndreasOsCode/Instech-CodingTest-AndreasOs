@@ -7,14 +7,13 @@ namespace Claims.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CoversController(IGenericContext<Cover> coversContext, 
+public class CoversController(IGenericDbContext<Cover> coversDbContext, 
     AuditContext auditContext, 
     ILogger<CoversController> logger)
     : ControllerBase
 {
     private readonly Auditer _auditer = new(auditContext);
     
-    //TODO: Add proper context, use methods from context
     //TODO: Separate private method into service
 
     [HttpPost("compute")]
@@ -26,13 +25,13 @@ public class CoversController(IGenericContext<Cover> coversContext,
     [HttpGet]
     public async Task<IEnumerable<Cover>> GetAsync()
     {
-        return await coversContext.GetItemsAsync();
+        return await coversDbContext.GetItemsAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<Cover?> GetAsync(string id)
     {
-        return await coversContext.GetItemAsync(id);
+        return await coversDbContext.GetItemAsync(id);
     }
 
     [HttpPost]
@@ -40,7 +39,7 @@ public class CoversController(IGenericContext<Cover> coversContext,
     {
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-        await coversContext.AddItemAsync(cover);
+        await coversDbContext.AddItemAsync(cover);
         _auditer.AuditCover(cover.Id, "POST");
         return Ok(cover);
     }
@@ -49,7 +48,7 @@ public class CoversController(IGenericContext<Cover> coversContext,
     public async Task DeleteAsync(string id)
     {
         _auditer.AuditCover(id, "DELETE");
-        await coversContext.DeleteItemAsync(id);
+        await coversDbContext.DeleteItemAsync(id);
     }
 
     private decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)

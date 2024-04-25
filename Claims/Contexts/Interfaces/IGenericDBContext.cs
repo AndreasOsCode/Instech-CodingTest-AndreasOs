@@ -1,6 +1,6 @@
 ﻿namespace Claims.Contexts.Interfaces;
 
-public interface IGenericContext<T>
+public interface IGenericDbContext<T>
 {
     public Task<IEnumerable<T>> GetItemsAsync();
 

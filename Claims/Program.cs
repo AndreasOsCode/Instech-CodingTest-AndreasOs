@@ -15,7 +15,7 @@ builder.Services
     });
 
 builder.Services.AddDbContext<AuditContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<ClaimsContext>(
+builder.Services.AddDbContext<ClaimsDbContext>(
     options =>
     {
         var client = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));

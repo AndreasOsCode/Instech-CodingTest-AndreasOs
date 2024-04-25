@@ -5,40 +5,41 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace Claims.Contexts;
 
-public class ClaimsContext(DbContextOptions options) : DbContext(options), IGenericContext<Claim>
+public class CoversDbContext : DbContext, IGenericDbContext<Cover>
 {
-    private DbSet<Claim> Claims { get; init; }
-
+    private DbSet<Cover> Covers { get; init; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Claim>().ToCollection("claims");
+        modelBuilder.Entity<Cover>().ToCollection("covers");
     }
 
-    public async Task<IEnumerable<Claim>> GetItemsAsync()
+
+    public async Task<IEnumerable<Cover>> GetItemsAsync()
     {
-        return await Claims.ToListAsync();
+        return await Covers.ToListAsync();
     }
 
-    public async Task<Claim?> GetItemAsync(string id)
+    public async Task<Cover?> GetItemAsync(string id)
     {
-        return await Claims
+        return await Covers
             .Where(claim => claim.Id == id)
             .SingleOrDefaultAsync();
     }
 
-    public async Task AddItemAsync(Claim claim)
+    public async Task AddItemAsync(Cover cover)
     {
-        Claims.Add(claim);
+        Covers.Add(cover);
         await SaveChangesAsync();
     }
 
     public async Task DeleteItemAsync(string id)
     {
-        var claim = await GetItemAsync(id);
-        if (claim is not null)
+        var cover = await GetItemAsync(id);
+        if (cover is not null)
         {
-            Claims.Remove(claim);
+            Covers.Remove(cover);
             await SaveChangesAsync();
         }
     }
