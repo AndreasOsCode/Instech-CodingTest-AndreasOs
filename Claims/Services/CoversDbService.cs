@@ -4,6 +4,10 @@ using Claims.Services.Interfaces;
 
 namespace Claims.Services;
 
+/**
+ * Service for adding business logic and validation
+ * to interactions with the covers database.
+ */
 public class CoversDbService(IGenericDbContext<Cover> coversDbContext) : IGenericDbService<Cover>
 {
     public async Task<IEnumerable<Cover>> GetItemsAsync()

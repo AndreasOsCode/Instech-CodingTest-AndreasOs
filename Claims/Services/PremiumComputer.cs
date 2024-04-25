@@ -15,32 +15,33 @@ public class PremiumComputer : IPremiumComputer<CoverType>
             _ => 1.3m
         };
 
-        var premiumPerDay = Constants.Constants.Rules.PremiumBaseDayRate * multiplier;
         var insuranceLength = (endDate - startDate).TotalDays;
         var totalPremium = 0m;
-
+        /*
+         * Assuming here that the discount specified in the task is applied successively
+         * So that after 30 days, the yacht has a 1.1*0.95 = 1.045 => 4.5% more expensive per day.
+         * This code is easily convertable to other interpretations, and expandable with other rules.
+         */
         for (var i = 0; i < insuranceLength; i++)
         {
-            /*if (i < 30) {totalPremium += premiumPerDay;}
-            
-            if (i is > 30 and < 180 && coverType == CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.05m;
-            else if (i < 180) totalPremium += premiumPerDay - premiumPerDay * 0.02m;
-            
-            if (i is > 180 and < 365 && coverType != CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.03m;
-            else if (i < 365) totalPremium += premiumPerDay - premiumPerDay * 0.08m;*/
-
             switch (i)
             {
                 case 30:
                 {
-                    if (coverType == CoverType.Yacht) multiplier *= 0.95m;
-                    else multiplier *= 0.98m;
+                    multiplier *= coverType switch
+                    {
+                        CoverType.Yacht => 0.95m,
+                        _ => 0.98m
+                    };
                     break;
                 }
                 case 180:
                 {
-                    if (coverType == CoverType.Yacht) multiplier *= 0.97m;
-                    else multiplier *= 0.99m;
+                    multiplier *= coverType switch
+                    {
+                        CoverType.Yacht => 0.97m,
+                        _ => 0.99m
+                    };
                     break;
                 }
             }

@@ -1,15 +1,18 @@
 ﻿namespace Claims.Auditing
 {
+    /**
+     * This should've had an interface and been injected, to avoid dependency inversion.
+     * This also should not be responsible for both claims and covers, because of the open-closed principle.
+     */
     public class Auditer
     {
         private readonly AuditContext _auditContext;
-
         public Auditer(AuditContext auditContext)
         {
             _auditContext = auditContext;
         }
 
-        public void AuditClaim(string id, string httpRequestType)
+        public async Task AuditClaim(string id, string httpRequestType)
         {
             var claimAudit = new ClaimAudit()
             {
@@ -18,11 +21,10 @@
                 ClaimId = id
             };
 
-            _auditContext.Add(claimAudit);
-            _auditContext.SaveChanges();
+            await _auditContext.Save(claimAudit);
         }
         
-        public void AuditCover(string id, string httpRequestType)
+        public async Task AuditCover(string id, string httpRequestType)
         {
             var coverAudit = new CoverAudit()
             {
@@ -31,8 +33,7 @@
                 CoverId = id
             };
 
-            _auditContext.Add(coverAudit);
-            _auditContext.SaveChanges();
+            await _auditContext.Save(coverAudit);
         }
     }
 }

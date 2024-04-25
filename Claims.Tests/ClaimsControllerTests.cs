@@ -47,7 +47,7 @@ namespace Claims.Tests
                 .WithWebHostBuilder(_ =>
                     {});
             var client = application.CreateClient();
-            
+            //Need to have a valid cover to test claims.
             var cover = new Cover
             {
                 Id = Guid.NewGuid().ToString(),
@@ -92,6 +92,50 @@ namespace Claims.Tests
             var afterDeleteGetResponse = await client.GetAsync($"Claims/{insertedClaim.Id}");
             Assert.True(afterDeleteGetResponse.StatusCode == HttpStatusCode.NoContent);
         }
+        [Fact]
+        public async Task Bad_Insert_Should_Fail()
+        {
+            var application = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(_ => { });
+            var client = application.CreateClient();
+            //Need to have a valid cover to test claims.
+            var cover = new Cover
+            {
+                Id = Guid.NewGuid().ToString(),
+                StartDate = DateTime.Now.AddDays(1),
+                EndDate = DateTime.Now.AddDays(120),
+                Type = CoverType.Yacht,
+                Premium = 0
+            };
+            var coverResponse = await client.PostAsync("/Covers", JsonContent.Create(cover));
+            coverResponse.EnsureSuccessStatusCode();
+            var coverContent = await coverResponse.Content.ReadAsStringAsync();
+            var insertedCover = JsonConvert.DeserializeObject<Cover>(coverContent);
+            Assert.True(insertedCover != null);
+
+            var outsideCoverClaim = new Claim
+            {
+                Id = Guid.NewGuid().ToString(),
+                CoverId = insertedCover.Id,
+                Created = DateTime.Now.AddDays(200),
+                Name = "TestCollision",
+                Type = ClaimType.Collision,
+                DamageCost = 2500
+            };
+            var outsideCoverClaimResponse = await client.PostAsync("/Claims", JsonContent.Create(outsideCoverClaim));
+            Assert.True(outsideCoverClaimResponse.StatusCode == HttpStatusCode.BadRequest);
+        
+            var tooExpensiveClaim = new Claim
+            {
+                Id = Guid.NewGuid().ToString(),
+                CoverId = insertedCover.Id,
+                Created = DateTime.Now.AddDays(50),
+                Name = "TestCollision",
+                Type = ClaimType.Collision,
+                DamageCost = 300000000
+            };
+            var tooExpensiveClaimResponse = await client.PostAsync("/Claims", JsonContent.Create(tooExpensiveClaim));
+            Assert.True(tooExpensiveClaimResponse.StatusCode == HttpStatusCode.BadRequest);
+        }
     }
-    
 }

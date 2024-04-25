@@ -1,5 +1,4 @@
 using Claims.Auditing;
-using Claims.Contexts.Interfaces;
 using Claims.Models;
 using Claims.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ namespace Claims.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CoversController(IGenericDbService<Cover> coversDbService, 
+public class CoversController(IGenericDbService<Cover> coversDbService, //This should have been dependency injected, but ran into issues implementing it.
     AuditContext auditContext, 
     ILogger<CoversController> logger,
     IPremiumComputer<CoverType> premiumComputer)
@@ -38,7 +37,7 @@ public class CoversController(IGenericDbService<Cover> coversDbService,
     }
     
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<ActionResult> CreateAsync(Cover cover)
     {
@@ -50,6 +49,7 @@ public class CoversController(IGenericDbService<Cover> coversDbService,
         }
         catch (ArgumentException ex)
         {
+            logger.LogError(ex,"Bad request received");
             return BadRequest(ex.Message);
         }
         _auditer.AuditCover(cover.Id, "POST");

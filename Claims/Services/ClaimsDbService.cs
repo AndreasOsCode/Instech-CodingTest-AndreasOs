@@ -32,7 +32,7 @@ public class ClaimsDbService(
             throw new ArgumentException($"Associated cover does not exist.");
         }
 
-        if (cover.StartDate > claim.Created || cover.EndDate < claim.Created)
+        if (claim.Created < cover.StartDate || cover.EndDate < claim.Created)
         {
             throw new ArgumentException("Claim falls outside of cover's date range.");
         }

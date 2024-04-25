@@ -11,7 +11,7 @@ namespace Claims.Controllers
     public class ClaimsController(
         ILogger<ClaimsController> logger,
         IGenericDbService<Claim> claimsDbService,
-        AuditContext auditContext)
+        AuditContext auditContext) //This should have been dependency injected, but ran into issues implementing it.
         : ControllerBase
     {
         private readonly Auditer _auditer = new(auditContext);
@@ -44,10 +44,10 @@ namespace Claims.Controllers
             }
             catch (ArgumentException ex)
             {
+                logger.LogError(ex,"Bad request received");
                 return BadRequest(ex.Message);
             }
-
-            _auditer.AuditClaim(claim.Id, "POST");
+            await _auditer.AuditClaim(claim.Id, "POST");
             return Ok(claim);
         }
         
@@ -55,7 +55,7 @@ namespace Claims.Controllers
         [HttpDelete("{id}")]
         public async Task DeleteAsync(string id)
         {
-            _auditer.AuditClaim(id, "DELETE");
+            await _auditer.AuditClaim(id, "DELETE");
             await claimsDbService.DeleteItemAsync(id);
         }
     }
