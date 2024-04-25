@@ -1,11 +1,8 @@
 using System.Text.Json.Serialization;
-using Claims;
 using Claims.Auditing;
-using Claims.Controllers;
+using Claims.Contexts;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
