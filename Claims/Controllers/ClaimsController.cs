@@ -1,4 +1,5 @@
 using Claims.Auditing;
+using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.EntityFrameworkCore.Extensions;

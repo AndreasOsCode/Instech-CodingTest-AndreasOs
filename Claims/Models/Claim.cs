@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace Claims
+namespace Claims.Models
 {
     public class Claim
     {
